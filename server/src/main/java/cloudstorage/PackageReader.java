@@ -1,7 +1,7 @@
 package cloudstorage;
 
+import cloudstorage.net.CommandPackage;
 import cloudstorage.net.FilePackage;
-import com.google.common.primitives.Ints;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -9,9 +9,11 @@ import java.io.IOException;
 public class PackageReader {
 
     private BufferedInputStream bufferedInputStream;
+    private ClientHandler clientHandler;
 
-    public PackageReader(BufferedInputStream bufferedInputStream) {
+    public PackageReader(BufferedInputStream bufferedInputStream, ClientHandler client) {
         this.bufferedInputStream = bufferedInputStream;
+        this.clientHandler = client;
     }
 
     public void read() throws IOException {
@@ -19,7 +21,10 @@ public class PackageReader {
         int flag = bufferedInputStream.read();
         System.out.println(flag);
         if (flag == FilePackage.flag) {
-            new FilePackageReader(bufferedInputStream).read();
+            new ServerFilePackageReader(bufferedInputStream, clientHandler).read();
+        } else if (flag == CommandPackage.flag) {
+            new ServerCommandPackageReader(bufferedInputStream, clientHandler).perform();
         }
+
     }
 }

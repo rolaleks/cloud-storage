@@ -1,44 +1,21 @@
-package cloudstorage;
+package cloudstorage.net;
 
-import com.google.common.base.Strings;
 import com.google.common.primitives.Ints;
 import com.google.common.primitives.Longs;
 
 import java.io.*;
 
-public class FilePackageReader {
+abstract public class FilePackageReader {
 
-    private BufferedInputStream bufferedInputStream;
+    protected BufferedInputStream bufferedInputStream;
 
     public FilePackageReader(BufferedInputStream bufferedInputStream) {
         this.bufferedInputStream = bufferedInputStream;
     }
 
-    public void read() {
+    abstract public void read();
 
-        String name = this.readFileName();
-        long readFileSize = this.readFileSize();
-        long loadedLen = 0;
-        try (FileOutputStream out = new FileOutputStream("cloud/" + name);
-             BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(out)) {
-
-            byte[] buffer = new byte[1024];
-            int len;
-            while ((len = bufferedInputStream.read(buffer)) != -1) {
-                loadedLen += len;
-                bufferedOutputStream.write(buffer);
-                if (loadedLen >= readFileSize) {
-                    break;
-                }
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private int readFileNameSize() {
+    protected int readFileNameSize() {
         byte[] fileNameSize = new byte[4];
         try {
             if (bufferedInputStream.read(fileNameSize) == 4) {
@@ -51,7 +28,7 @@ public class FilePackageReader {
     }
 
 
-    private String readFileName() {
+    protected String readFileName() {
         int size = this.readFileNameSize();
         byte[] fileName = new byte[size];
         try {
@@ -65,7 +42,7 @@ public class FilePackageReader {
     }
 
 
-    private long readFileSize() {
+    protected long readFileSize() {
         byte[] fileSize = new byte[8];
         try {
             if (bufferedInputStream.read(fileSize) == 8) {
