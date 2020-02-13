@@ -1,5 +1,14 @@
 package cloudstorage;
 
+import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelOption;
+import io.netty.channel.EventLoopGroup;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.SocketChannel;
+import io.netty.channel.socket.nio.NioServerSocketChannel;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -9,16 +18,28 @@ public class CloudServer {
     private ServerSocket serverSocket;
 
     public CloudServer() {
+        EventLoopGroup bossGroup = new NioEventLoopGroup();
+        EventLoopGroup workerGroup = new NioEventLoopGroup();
         try {
-            this.serverSocket = new ServerSocket(8888);
-            while (true) {
-                Socket socket = this.serverSocket.accept();
-                System.out.println("Новое подключение");
-                new ClientHandler(this, socket);
-            }
-
-        } catch (IOException e) {
+            ServerBootstrap b = new ServerBootstrap();
+            CloudServer server = this;
+            b.group(bossGroup, workerGroup)
+                    .channel(NioServerSocketChannel.class)
+                    .childHandler(new ChannelInitializer<SocketChannel>() {
+                        @Override
+                        public void initChannel(SocketChannel ch) throws Exception {
+                            System.out.println("Новое подключение");
+                            ch.pipeline().addLast(new ClientHandler(server, ch));
+                        }
+                    })
+                    .childOption(ChannelOption.SO_KEEPALIVE, true);
+            ChannelFuture f = b.bind(8888).sync();
+            f.channel().closeFuture().sync();
+        } catch (InterruptedException e) {
             e.printStackTrace();
+        } finally {
+            workerGroup.shutdownGracefully();
+            bossGroup.shutdownGracefully();
         }
     }
 
