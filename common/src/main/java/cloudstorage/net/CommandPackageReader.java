@@ -2,58 +2,80 @@ package cloudstorage.net;
 
 import com.google.common.primitives.Ints;
 import com.google.common.primitives.Longs;
+import io.netty.buffer.ByteBuf;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
 
-abstract public class CommandPackageReader {
+abstract public class CommandPackageReader implements PackageReadable {
 
-    protected BufferedInputStream bufferedInputStream;
+    private Integer commandNameSize;
+    private String commandName;
+    private Integer paramsSize;
+    private String params;
 
-    public CommandPackageReader(BufferedInputStream bufferedInputStream) {
-        this.bufferedInputStream = bufferedInputStream;
-    }
+    abstract public boolean read(ByteBuf byteBuf);
 
-    abstract public void perform();
-
-    protected int readCommandNameSize() {
-        byte[] fileNameSize = new byte[4];
-        try {
-            if (bufferedInputStream.read(fileNameSize) == 4) {
-                return Ints.fromByteArray(fileNameSize);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+    protected Integer readCommandNameSize(ByteBuf byteBuf) throws NotEnoughBytesException {
+        if (commandNameSize != null) {
+            return commandNameSize;
         }
-        return 0;
+        if (byteBuf.readableBytes() >= 4) {
+            commandNameSize = byteBuf.readInt();
+        } else {
+            throw new NotEnoughBytesException("Недостаточно байт");
+        }
+
+        return commandNameSize;
     }
 
 
-    protected String readCommandName() {
-        int size = this.readCommandNameSize();
+    protected String readCommandName(ByteBuf byteBuf) throws NotEnoughBytesException {
+        if (commandName != null) {
+            return commandName;
+        }
+        Integer size = this.readCommandNameSize(byteBuf);
+
         byte[] fileName = new byte[size];
-        try {
-            if (bufferedInputStream.read(fileName) == size) {
-                return new String(fileName);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (byteBuf.readableBytes() >= size) {
+            byteBuf.readBytes(fileName);
+            this.commandName = new String(fileName);
+        } else {
+            throw new NotEnoughBytesException("Недостаточно байт");
         }
-        return null;
+
+        return this.commandName;
     }
 
 
-    protected int readParamsSize() {
-        byte[] fileSize = new byte[4];
-        try {
-            if (bufferedInputStream.read(fileSize) == 4) {
-                return Ints.fromByteArray(fileSize);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+    protected int readParamsSize(ByteBuf byteBuf) throws NotEnoughBytesException {
+        if (paramsSize != null) {
+            return paramsSize;
         }
-        return 0;
+        if (byteBuf.readableBytes() >= 4) {
+            paramsSize = byteBuf.readInt();
+        } else {
+            throw new NotEnoughBytesException("Недостаточно байт");
+        }
+
+        return paramsSize;
     }
 
+
+    protected String readParams(ByteBuf byteBuf) throws NotEnoughBytesException {
+
+        if (params != null) {
+            return params;
+        }
+        Integer size = this.readParamsSize(byteBuf);
+
+        byte[] paramsBytes = new byte[size];
+        if (byteBuf.readableBytes() >= size) {
+            byteBuf.readBytes(paramsBytes);
+            params = new String(paramsBytes);
+        }
+
+        return params;
+    }
 
 }

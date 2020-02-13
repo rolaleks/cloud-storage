@@ -1,57 +1,65 @@
 package cloudstorage.net;
 
-import com.google.common.primitives.Ints;
-import com.google.common.primitives.Longs;
+import io.netty.buffer.ByteBuf;
 
 import java.io.*;
 
-abstract public class FilePackageReader {
+abstract public class FilePackageReader implements PackageReadable {
 
-    protected BufferedInputStream bufferedInputStream;
+    protected Integer fileNameSize;
+    protected String fileName;
+    protected Long fileSize;
 
-    public FilePackageReader(BufferedInputStream bufferedInputStream) {
-        this.bufferedInputStream = bufferedInputStream;
-    }
+    abstract public boolean read(ByteBuf byteBuf);
 
-    abstract public void read();
+    protected Integer readFileNameSize(ByteBuf byteBuf) throws NotEnoughBytesException {
 
-    protected int readFileNameSize() {
-        byte[] fileNameSize = new byte[4];
-        try {
-            if (bufferedInputStream.read(fileNameSize) == 4) {
-                return Ints.fromByteArray(fileNameSize);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (this.fileNameSize != null) {
+            return this.fileNameSize;
         }
-        return 0;
+
+        if (byteBuf.readableBytes() >= 4) {
+            this.fileNameSize = byteBuf.readInt();
+        } else {
+            throw new NotEnoughBytesException("Недостаточно байт");
+        }
+
+        return this.fileNameSize;
     }
 
 
-    protected String readFileName() {
-        int size = this.readFileNameSize();
+    protected String readFileName(ByteBuf byteBuf) throws NotEnoughBytesException {
+        if (this.fileName != null) {
+            return this.fileName;
+        }
+
+        Integer size = this.readFileNameSize(byteBuf);
+
         byte[] fileName = new byte[size];
-        try {
-            if (bufferedInputStream.read(fileName) == size) {
-                return new String(fileName);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+
+        if (byteBuf.readableBytes() >= size) {
+            byteBuf.readBytes(fileName);
+            this.fileName = new String(fileName);
+        } else {
+            throw new NotEnoughBytesException("Недостаточно байт");
         }
-        return null;
+
+        return this.fileName;
     }
 
 
-    protected long readFileSize() {
-        byte[] fileSize = new byte[8];
-        try {
-            if (bufferedInputStream.read(fileSize) == 8) {
-                return Longs.fromByteArray(fileSize);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+    protected long readFileSize(ByteBuf byteBuf) throws NotEnoughBytesException {
+
+        if (this.fileSize != null) {
+            return this.fileSize;
         }
-        return 0;
+
+        if (byteBuf.readableBytes() >= 8) {
+            this.fileSize = byteBuf.readLong();
+        } else {
+            throw new NotEnoughBytesException("Недостаточно байт");
+        }
+        return this.fileSize;
     }
 
 

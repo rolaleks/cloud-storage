@@ -2,29 +2,44 @@ package cloudstorage;
 
 import cloudstorage.net.CommandPackage;
 import cloudstorage.net.FilePackage;
+import cloudstorage.net.PackageReadable;
+import io.netty.buffer.ByteBuf;
 
-import java.io.BufferedInputStream;
 import java.io.IOException;
 
 public class PackageReader {
 
-    private BufferedInputStream bufferedInputStream;
     private ClientHandler clientHandler;
+    private byte packageType;
+    private PackageReadable packageReader;
 
-    public PackageReader(BufferedInputStream bufferedInputStream, ClientHandler client) {
-        this.bufferedInputStream = bufferedInputStream;
+    public PackageReader(ClientHandler client) {
         this.clientHandler = client;
     }
 
-    public void read() throws IOException {
-
-        int flag = bufferedInputStream.read();
-        System.out.println(flag);
-        if (flag == FilePackage.flag) {
-            new ServerFilePackageReader(bufferedInputStream, clientHandler).read();
-        } else if (flag == CommandPackage.flag) {
-            new ServerCommandPackageReader(bufferedInputStream, clientHandler).perform();
+    public void read(ByteBuf byteBuf) throws IOException {
+        if (packageType == 0) {
+            System.out.println("initPackage");
+            initPackage(byteBuf);
         }
 
+        if (this.packageReader.read(byteBuf)) {
+            System.out.println("reset");
+            reset();
+        }
+    }
+
+    private void initPackage(ByteBuf byteBuf) {
+        this.packageType = byteBuf.readByte();
+        if (this.packageType == FilePackage.flag) {
+            this.packageReader = new ServerFilePackageReader(this.clientHandler);
+        } else if (this.packageType == CommandPackage.flag) {
+            this.packageReader = new ServerCommandPackageReader(this.clientHandler);
+        }
+    }
+
+    private void reset() {
+        this.packageType = 0;
+        this.packageReader = null;
     }
 }
