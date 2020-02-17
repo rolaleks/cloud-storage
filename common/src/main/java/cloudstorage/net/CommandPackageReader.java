@@ -73,6 +73,8 @@ abstract public class CommandPackageReader implements PackageReadable {
         if (byteBuf.readableBytes() >= size) {
             byteBuf.readBytes(paramsBytes);
             params = new String(paramsBytes);
+        } else {
+            throw new NotEnoughBytesException("Недостаточно байт");
         }
 
         return params;

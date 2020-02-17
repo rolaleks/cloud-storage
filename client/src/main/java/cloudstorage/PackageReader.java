@@ -9,20 +9,22 @@ import java.io.IOException;
 
 public class PackageReader {
 
-    private ClientHandler clientHandler;
+    private ServerHandler serverHandler;
     private byte packageType;
     private PackageReadable packageReader;
 
-    public PackageReader(ClientHandler client) {
-        this.clientHandler = client;
+    public PackageReader(ServerHandler serverHandler) {
+        this.serverHandler = serverHandler;
     }
 
     public void read(ByteBuf byteBuf) throws IOException {
         if (packageType == 0) {
+            System.out.println("initPackage");
             initPackage(byteBuf);
         }
 
         if (this.packageReader.read(byteBuf)) {
+            System.out.println("reset");
             reset();
         }
     }
@@ -30,9 +32,9 @@ public class PackageReader {
     private void initPackage(ByteBuf byteBuf) {
         this.packageType = byteBuf.readByte();
         if (this.packageType == FilePackage.flag) {
-            this.packageReader = new ServerFilePackageReader(this.clientHandler);
+            this.packageReader = new ClientFilePackageReader(this.serverHandler);
         } else if (this.packageType == CommandPackage.flag) {
-            this.packageReader = new ServerCommandPackageReader(this.clientHandler);
+            this.packageReader = new ClientCommandPackageReader(this.serverHandler);
         }
     }
 
