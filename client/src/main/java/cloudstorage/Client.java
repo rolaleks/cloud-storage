@@ -1,23 +1,28 @@
 package cloudstorage;
 
 
-import cloudstorage.net.CommandPackage;
-import cloudstorage.net.FilePackage;
-import cloudstorage.net.PackageCommandType;
+import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 
-public class Client {
+public class Client extends Application {
 
     public static void main(String[] args) {
 
-        CloudClient cloudClient = new CloudClient();
-
-
-        CommandPackage authPackage = new CommandPackage(PackageCommandType.AUTH, "test:test");
-        FilePackage filePackage = new FilePackage("test.file");
-
-        cloudClient.send(authPackage);
-        cloudClient.send(filePackage);
+        launch(args);
 
     }
 
+    @Override
+    public void start(Stage stage) throws Exception {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/main.fxml"));
+        Parent root = loader.load();
+        stage.setTitle("Cloud Storage");
+        stage.setScene(new Scene(root, 400, 300));
+        stage.show();
+
+        ControllerManager.setMainController(loader.getController());
+    }
 }

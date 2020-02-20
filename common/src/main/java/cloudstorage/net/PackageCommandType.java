@@ -1,5 +1,5 @@
 package cloudstorage.net;
 
 public enum PackageCommandType {
-    AUTH
+    AUTH, GET_FILES, GET_FILE
 }

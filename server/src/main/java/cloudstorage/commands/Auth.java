@@ -1,6 +1,7 @@
 package cloudstorage.commands;
 
 import cloudstorage.ClientHandler;
+import cloudstorage.db.User;
 
 public class Auth {
 
@@ -15,8 +16,23 @@ public class Auth {
 
     public void perform() {
 
-        //TODO авторизацию
+        String[] loginPass = params.split(":");
 
-        clientHandler.setAuth(params.startsWith("test:test"));
+        if (loginPass.length != 2) {
+            clientHandler.setAuth(false);
+            return;
+        }
+
+        User user = User.findOneByLogin(loginPass[0]);
+
+        if (user != null) {
+            boolean isAuth = user.getPass().equals(loginPass[1]);
+            clientHandler.setAuth(isAuth);
+            if(isAuth)
+            clientHandler.setUser(user);
+            return;
+        }
+
+        clientHandler.setAuth(false);
     }
 }

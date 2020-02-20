@@ -1,19 +1,18 @@
 package cloudstorage;
 
-import cloudstorage.commands.Auth;
-import cloudstorage.commands.GetFile;
+import cloudstorage.commands.AuthStatus;
 import cloudstorage.commands.GetFiles;
 import cloudstorage.net.CommandPackageReader;
 import cloudstorage.net.NotEnoughBytesException;
 import cloudstorage.net.PackageCommandType;
 import io.netty.buffer.ByteBuf;
 
-public class ServerCommandPackageReader extends CommandPackageReader {
+public class ClientCommandPackageReader extends CommandPackageReader {
 
-    protected ClientHandler client;
+    protected ServerHandler serverHandler;
 
-    public ServerCommandPackageReader(ClientHandler client) {
-        this.client = client;
+    public ClientCommandPackageReader(ServerHandler serverHandler) {
+        this.serverHandler = serverHandler;
     }
 
     public boolean read(ByteBuf byteBuf) {
@@ -24,13 +23,10 @@ public class ServerCommandPackageReader extends CommandPackageReader {
             String params = this.readParams(byteBuf);
             switch (PackageCommandType.valueOf(name)) {
                 case AUTH:
-                    (new Auth(params, this.client)).perform();
+                    (new AuthStatus(params, this.serverHandler)).perform();
                     break;
                 case GET_FILES:
-                    (new GetFiles(this.client)).perform();
-                    break;
-                case GET_FILE:
-                    (new GetFile(params, this.client)).perform();
+                    (new GetFiles(params, this.serverHandler)).perform();
                     break;
                 default:
                     throw new IllegalStateException("Unknown command: " + name);

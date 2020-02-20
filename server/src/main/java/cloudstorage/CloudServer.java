@@ -1,5 +1,6 @@
 package cloudstorage;
 
+import cloudstorage.db.DbConnection;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -21,6 +22,7 @@ public class CloudServer {
         EventLoopGroup bossGroup = new NioEventLoopGroup();
         EventLoopGroup workerGroup = new NioEventLoopGroup();
         try {
+            DbConnection.getInstance().connect();
             ServerBootstrap b = new ServerBootstrap();
             CloudServer server = this;
             b.group(bossGroup, workerGroup)
