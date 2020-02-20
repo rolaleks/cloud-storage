@@ -1,5 +1,6 @@
 package cloudstorage;
 
+import cloudstorage.commands.ServerCommandDispatcher;
 import cloudstorage.db.User;
 import cloudstorage.net.CommandPackage;
 import cloudstorage.net.Package;
@@ -18,6 +19,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
     private CloudServer server;
     private SocketChannel socket;
     private PackageReader packageReader;
+    private ServerCommandDispatcher serverCommandDispatcher;
     ChannelHandlerContext ctx;
 
     private boolean isAuth;
@@ -74,5 +76,12 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
 
     public User getUser() {
         return this.user;
+    }
+
+    public ServerCommandDispatcher getServerCommandDispatcher() {
+        if (this.serverCommandDispatcher == null) {
+            this.serverCommandDispatcher = new ServerCommandDispatcher(this);
+        }
+        return this.serverCommandDispatcher;
     }
 }

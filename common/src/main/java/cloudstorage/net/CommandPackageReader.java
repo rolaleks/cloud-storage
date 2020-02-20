@@ -80,4 +80,11 @@ abstract public class CommandPackageReader implements PackageReadable {
         return params;
     }
 
+    public void reset() {
+        commandNameSize = null;
+        commandName = null;
+        paramsSize = null;
+        params = null;
+    }
+
 }

@@ -5,7 +5,7 @@ import com.google.common.primitives.Ints;
 
 public class CommandPackage extends Package {
 
-    public static byte flag = 11;
+    public final static byte flag = 11;
 
     private PackageCommandType command;
     private String params;

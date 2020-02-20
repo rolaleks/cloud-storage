@@ -1,5 +1,6 @@
 package cloudstorage;
 
+import cloudstorage.commands.ClientCommandDispatcher;
 import cloudstorage.net.Package;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -8,6 +9,7 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.socket.SocketChannel;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 public class ServerHandler extends ChannelInboundHandlerAdapter {
 
@@ -15,6 +17,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     CloudClient client;
     SocketChannel socket;
     PackageReader packageReader;
+    private ClientCommandDispatcher clientCommandDispatcher;
 
     public ServerHandler(CloudClient client, SocketChannel socket) {
         this.socket = socket;
@@ -51,8 +54,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         }
     }
 
-    public CloudClient getCloudClient()
-    {
+    public CloudClient getCloudClient() {
 
         return this.client;
     }
@@ -62,4 +64,12 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         cause.printStackTrace();
     }
 
+    public ClientCommandDispatcher getClientCommandDispatcher() {
+
+        if (clientCommandDispatcher == null) {
+            clientCommandDispatcher = new ClientCommandDispatcher(this);
+        }
+
+        return clientCommandDispatcher;
+    }
 }

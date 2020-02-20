@@ -12,7 +12,7 @@ import java.nio.file.Paths;
 
 public class FilePackage extends Package {
 
-    public static byte flag = 10;
+    public final static byte flag = 10;
 
     private String file;
     private String filename;

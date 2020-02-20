@@ -4,11 +4,10 @@ import cloudstorage.ServerHandler;
 
 public class BaseCommand {
 
-    protected String params;
     protected ServerHandler serverHandler;
 
-    public BaseCommand(String params, ServerHandler serverHandler) {
-        this.params = params;
+    public BaseCommand(ServerHandler serverHandler) {
+
         this.serverHandler = serverHandler;
     }
 }

@@ -20,40 +20,10 @@ public class ClientFilePackageReader extends FilePackageReader {
         this.serverHandler = serverHandler;
     }
 
-    public boolean read(ByteBuf byteBuf) {
 
-        try {
-            String name = this.readFileName(byteBuf);
-            long readFileSize = this.readFileSize(byteBuf);
-            String filePath = CloudClient.localPath + "/" + name;
-            Path path = Paths.get(filePath);
-            long loadedLen = Files.exists(path) ? Files.size(path) : 0;
+    @Override
+    public Path getFilePath(String fileName) {
 
-            try (FileOutputStream out = new FileOutputStream(filePath);
-                 BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(out)) {
-
-                long leftToLoad = readFileSize - loadedLen;
-                leftToLoad = byteBuf.readableBytes() > leftToLoad ? leftToLoad : byteBuf.readableBytes();
-                loadedLen += leftToLoad;
-
-                byte[] bytes = new byte[(int)leftToLoad];
-                byteBuf.readBytes(bytes);
-                bufferedOutputStream.write(bytes);
-                if (loadedLen >= readFileSize) {
-                    ControllerManager.getMainController().refreshFiles();
-                    return true;
-                }
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } catch (NotEnoughBytesException | IOException e) {
-            return false;
-        }
-
-        return false;
+        return Paths.get(CloudClient.localPath + "/" + fileName);
     }
-
-
 }

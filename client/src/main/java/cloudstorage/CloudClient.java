@@ -89,7 +89,6 @@ public class CloudClient {
 
     public void setAuth(boolean auth) {
         isAuth = auth;
-        System.out.println("setAuth");
         ControllerManager.getMainController().setAuthorized(auth);
     }
 
@@ -110,7 +109,7 @@ public class CloudClient {
 
     public void sendFileToServer(String file) {
         FilePackage filePackage = new FilePackage(localPath + "/" + file);
-        System.out.println(localPath + "/" + file);
+
         sendPackage(filePackage);
         getRemoteFiles();
     }

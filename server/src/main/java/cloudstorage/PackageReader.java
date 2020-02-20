@@ -6,18 +6,23 @@ import cloudstorage.net.PackageReadable;
 import io.netty.buffer.ByteBuf;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 public class PackageReader {
 
     private ClientHandler clientHandler;
     private byte packageType;
     private PackageReadable packageReader;
+    private ServerFilePackageReader serverFilePackageReader;
+    private ServerCommandPackageReader serverCommandPackageReader;
 
     public PackageReader(ClientHandler client) {
         this.clientHandler = client;
     }
 
     public void read(ByteBuf byteBuf) throws IOException {
+
+
         if (packageType == 0) {
             initPackage(byteBuf);
         }
@@ -25,19 +30,45 @@ public class PackageReader {
         if (this.packageReader.read(byteBuf)) {
             reset();
         }
+        if (byteBuf.readableBytes() == 0) {
+            byteBuf.release();
+        }
     }
 
     private void initPackage(ByteBuf byteBuf) {
+
         this.packageType = byteBuf.readByte();
-        if (this.packageType == FilePackage.flag) {
-            this.packageReader = new ServerFilePackageReader(this.clientHandler);
-        } else if (this.packageType == CommandPackage.flag) {
-            this.packageReader = new ServerCommandPackageReader(this.clientHandler);
+
+        switch (this.packageType) {
+            case FilePackage.flag:
+                this.packageReader = getServerFilePackageReader();
+                break;
+            case CommandPackage.flag:
+                this.packageReader = getServerCommandPackageReader();
+                break;
         }
     }
 
     private void reset() {
         this.packageType = 0;
         this.packageReader = null;
+    }
+
+    private ServerFilePackageReader getServerFilePackageReader() {
+        if (this.serverFilePackageReader == null) {
+            this.serverFilePackageReader = new ServerFilePackageReader(this.clientHandler);
+        } else {
+            this.serverFilePackageReader.reset();
+        }
+        return this.serverFilePackageReader;
+    }
+
+    private ServerCommandPackageReader getServerCommandPackageReader() {
+        if (this.serverCommandPackageReader == null) {
+            this.serverCommandPackageReader = new ServerCommandPackageReader(this.clientHandler);
+        } else {
+            this.serverCommandPackageReader.reset();
+        }
+        return this.serverCommandPackageReader;
     }
 }

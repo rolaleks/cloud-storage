@@ -2,19 +2,18 @@ package cloudstorage.commands;
 
 import cloudstorage.ClientHandler;
 import cloudstorage.db.User;
+import cloudstorage.net.CommandPerformable;
 
-public class Auth {
+public class Auth implements CommandPerformable {
 
-    protected String params;
     protected ClientHandler clientHandler;
 
-    public Auth(String params, ClientHandler clientHandler) {
+    public Auth(ClientHandler clientHandler) {
 
-        this.params = params;
         this.clientHandler = clientHandler;
     }
 
-    public void perform() {
+    public void perform(String params) {
 
         String[] loginPass = params.split(":");
 

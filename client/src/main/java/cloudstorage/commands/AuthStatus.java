@@ -1,15 +1,16 @@
 package cloudstorage.commands;
 
 import cloudstorage.ServerHandler;
+import cloudstorage.net.CommandPerformable;
 
-public class AuthStatus extends BaseCommand {
+public class AuthStatus extends BaseCommand implements CommandPerformable {
 
 
-    public AuthStatus(String params, ServerHandler clientHandler) {
-        super(params, clientHandler);
+    public AuthStatus(ServerHandler serverHandler) {
+        super(serverHandler);
     }
 
-    public void perform() {
+    public void perform(String params) {
 
         boolean isAuth = params.equals("1");
 
