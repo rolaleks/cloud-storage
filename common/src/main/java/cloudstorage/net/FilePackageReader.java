@@ -25,7 +25,7 @@ abstract public class FilePackageReader implements PackageReadable {
 
             Path path = getFilePath(name);
             //смотрим сколько мы уже загрузили в файл байт
-            long currentFileSize = Files.exists(path) ? Files.size(path) : 0;
+            long currentFileSize = fileCreated && Files.exists(path) ? Files.size(path) : 0;
 
             if (byteBuf.readableBytes() <= 0) {
                 return false;

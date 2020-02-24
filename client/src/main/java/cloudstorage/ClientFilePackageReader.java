@@ -1,14 +1,8 @@
 package cloudstorage;
 
 import cloudstorage.net.FilePackageReader;
-import cloudstorage.net.NotEnoughBytesException;
 import io.netty.buffer.ByteBuf;
 
-import java.io.BufferedOutputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -20,10 +14,19 @@ public class ClientFilePackageReader extends FilePackageReader {
         this.serverHandler = serverHandler;
     }
 
+    @Override
+    public boolean read(ByteBuf byteBuf) {
+        boolean result = super.read(byteBuf);
+
+        if (result) {
+            ControllerManager.getMainController().refreshFiles();
+        }
+        return result;
+    }
 
     @Override
     public Path getFilePath(String fileName) {
 
-        return Paths.get(CloudClient.localPath + "/" + fileName);
+        return Paths.get(ControllerManager.getMainController().getFolder() + "/" + fileName);
     }
 }

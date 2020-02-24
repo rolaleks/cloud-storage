@@ -98,7 +98,7 @@ public class CloudClient {
     }
 
     public String[] getLocalFiles() {
-        FolderReader folderReader = new FolderReader(localPath);
+        FolderReader folderReader = new FolderReader(ControllerManager.getMainController().getFolder());
         return folderReader.getFileNames();
     }
 
@@ -108,7 +108,7 @@ public class CloudClient {
     }
 
     public void sendFileToServer(String file) {
-        FilePackage filePackage = new FilePackage(localPath + "/" + file);
+        FilePackage filePackage = new FilePackage(ControllerManager.getMainController().getFolder() + "/" + file);
 
         sendPackage(filePackage);
         getRemoteFiles();

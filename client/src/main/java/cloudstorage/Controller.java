@@ -3,12 +3,18 @@ package cloudstorage;
 import cloudstorage.net.CommandPackage;
 import cloudstorage.net.PackageCommandType;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.Window;
 
+import java.io.File;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.ResourceBundle;
@@ -19,7 +25,7 @@ public class Controller implements Initializable {
     HBox upperPanel;
 
     @FXML
-    HBox filePanel;
+    VBox filePanel;
 
     @FXML
     TextField loginField;
@@ -33,6 +39,9 @@ public class Controller implements Initializable {
     @FXML
     ListView<String> serverList;
 
+    @FXML
+    TextField folder;
+
     CloudClient cloudClient;
 
     private boolean isAuthorized;
@@ -40,6 +49,7 @@ public class Controller implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         setAuthorized(false);
+        initFolder();
     }
 
     public void setAuthorized(boolean isAuthorized) {
@@ -99,6 +109,16 @@ public class Controller implements Initializable {
 
     }
 
+    private void initFolder() {
+        File f = new File(CloudClient.localPath);
+        folder.setText(f.getAbsolutePath());
+    }
+
+    public String getFolder() {
+
+        return folder.getText();
+    }
+
     public void sendToClient(MouseEvent mouseEvent) {
         if (mouseEvent.getClickCount() == 2) {
             String file = serverList.getSelectionModel().getSelectedItem();
@@ -106,5 +126,19 @@ public class Controller implements Initializable {
                 getCloudClient().loadFileFromServer(file);
 
         }
+    }
+
+    public void folderSelect(ActionEvent actionEvent) {
+        DirectoryChooser directoryChooser = new DirectoryChooser();
+        File selectedDirectory = directoryChooser.showDialog(folder.getScene().getWindow());
+
+        if (selectedDirectory != null) {
+            folder.setText(selectedDirectory.getAbsolutePath());
+            refreshFiles();
+        }
+    }
+
+    public void exit(ActionEvent actionEvent) {
+        Platform.exit();
     }
 }

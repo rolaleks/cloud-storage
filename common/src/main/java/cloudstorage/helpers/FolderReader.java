@@ -19,7 +19,7 @@ public class FolderReader {
 
     public String[] getFileNames() {
         try {
-            String[] files = Files.walk(Paths.get(path))
+            String[] files = Files.list(Paths.get(path))
                     .filter(Files::isRegularFile)
                     .map(path -> path.getFileName().toString())
                     .toArray(String[]::new);

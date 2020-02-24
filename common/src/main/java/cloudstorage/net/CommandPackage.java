@@ -32,7 +32,7 @@ public class CommandPackage extends Package {
 
         byte[] commandSizeBytes = Ints.toByteArray(this.command.toString().length());
         byte[] commandBytes = this.command.toString().getBytes();
-        byte[] sizeBytes = Ints.toByteArray(this.params.length());
+        byte[] sizeBytes = Ints.toByteArray(this.params.getBytes().length);
 
 
         return Bytes.concat(commandSizeBytes, commandBytes, sizeBytes);

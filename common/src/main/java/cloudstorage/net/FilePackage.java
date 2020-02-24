@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 
 public class FilePackage extends Package {
 
@@ -48,8 +49,8 @@ public class FilePackage extends Package {
     @Override
     byte[] getHeadBytes() {
 
-        byte[] nameSizeBytes = Ints.toByteArray(this.filename.length());
         byte[] nameBytes = this.filename.getBytes();
+        byte[] nameSizeBytes = Ints.toByteArray(nameBytes.length);
         byte[] sizeBytes = Longs.toByteArray(this.size);
 
 

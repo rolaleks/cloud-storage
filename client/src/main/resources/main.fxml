@@ -10,26 +10,45 @@
 <?scenebuilder-stylesheet /Styles.css?>
 <?import java.net.URL?>
 <?import javafx.scene.control.Label?>
-<VBox alignment="center" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8.0.112-ea" fx:controller="cloudstorage.Controller">
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.SeparatorMenuItem?>
+<VBox xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8.0.112-ea"
+      fx:controller="cloudstorage.Controller">
     <stylesheets>
         <URL value="@/Style.css"/>
     </stylesheets>
+    <MenuBar fx:id="menuBar">
+        <menus>
+            <Menu text="Действия">
+                <items>
+                    <MenuItem onAction="#folderSelect" text="Выбрать папку"/>
+                    <SeparatorMenuItem/>
+                    <MenuItem onAction="#exit" text="Выйти"/>
+                </items>
+            </Menu>
+        </menus>
+    </MenuBar>
     <HBox fx:id="upperPanel">
-        <TextField fx:id="loginField" promptText="Логин" HBox.hgrow="ALWAYS" />
-        <PasswordField fx:id="passwordField" onAction="#tryToAuth" promptText="Пароль" />
-        <Button onAction="#tryToAuth" text="Авторизоваться" />
-    </HBox>
-    <HBox VBox.vgrow="ALWAYS" fx:id="filePanel">
-
-
-        <VBox HBox.hgrow="ALWAYS"  >
-            <Label>Локальные файлы:</Label>
-            <ListView fx:id="clientsList" onMouseClicked="#sendToServer" />
-        </VBox>
-        <VBox HBox.hgrow="ALWAYS"  >
-            <Label>Файлы на сервере:</Label>
-            <ListView fx:id="serverList" onMouseClicked="#sendToClient" />
-        </VBox>
+        <TextField fx:id="loginField" promptText="Логин" HBox.hgrow="ALWAYS"/>
+        <PasswordField fx:id="passwordField" onAction="#tryToAuth" promptText="Пароль"/>
+        <Button onAction="#tryToAuth" text="Авторизоваться"/>
     </HBox>
 
+    <VBox fx:id="filePanel">
+        <HBox VBox.vgrow="ALWAYS"  >
+            <TextField HBox.hgrow="ALWAYS" fx:id="folder"></TextField>
+        </HBox>
+        <HBox VBox.vgrow="ALWAYS">
+            <VBox HBox.hgrow="ALWAYS">
+                <Label>Локальные файлы:</Label>
+                <ListView fx:id="clientsList" onMouseClicked="#sendToServer"/>
+            </VBox>
+            <VBox HBox.hgrow="ALWAYS">
+                <Label>Файлы на сервере:</Label>
+                <ListView fx:id="serverList" onMouseClicked="#sendToClient"/>
+            </VBox>
+        </HBox>
+    </VBox>
 </VBox>
