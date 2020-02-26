@@ -10,6 +10,10 @@ public class GetFiles extends BaseCommand implements CommandPerformable {
         super(serverHandler);
     }
 
+    /**
+     *
+     * @param params список файлов с сервера разделенные ";"
+     */
     public void perform(String params) {
 
         String[] files = params.split(";");

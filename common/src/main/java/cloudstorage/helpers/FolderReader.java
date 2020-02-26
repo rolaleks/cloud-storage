@@ -1,8 +1,5 @@
 package cloudstorage.helpers;
 
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -17,6 +14,9 @@ public class FolderReader {
     }
 
 
+    /**
+     * @return список всех файлов в данной папке
+     */
     public String[] getFileNames() {
         try {
             String[] files = Files.list(Paths.get(path))
@@ -31,6 +31,9 @@ public class FolderReader {
         return new String[0];
     }
 
+    /**
+     * создание папки
+     */
     public void createPath() {
 
         Path folder = Paths.get(path);

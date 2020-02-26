@@ -22,14 +22,22 @@ public class PackageReader {
 
     public void read(ByteBuf byteBuf) throws IOException {
         if (packageType == 0) {
+            //Если это начало запроса, то определяем обработчик этого запроса
             initPackage(byteBuf);
         }
 
         if (this.packageReader.read(byteBuf)) {
             reset();
         }
+        if (byteBuf.readableBytes() == 0) {
+            byteBuf.release();
+        }
     }
 
+    /**
+     * Определение типа обработчика для запроса
+     * @param byteBuf буфер
+     */
     private void initPackage(ByteBuf byteBuf) {
         this.packageType = byteBuf.readByte();
         switch (this.packageType) {
@@ -42,12 +50,19 @@ public class PackageReader {
         }
     }
 
+    /**
+     * сбрасываем состояние PackageReader в исходное, вызывается после завершение считывания всех пактов запроса
+     */
     private void reset() {
         this.packageType = 0;
         this.packageReader = null;
     }
 
 
+    /**
+     *
+     * @return Обработчик файловых пакетов, если обработчик был уже создан, сбрасываем его состояние
+     */
     private ClientFilePackageReader getClientFilePackageReader() {
         if (this.clientFilePackageReader == null) {
             this.clientFilePackageReader = new ClientFilePackageReader(this.serverHandler);
@@ -57,6 +72,10 @@ public class PackageReader {
         return this.clientFilePackageReader;
     }
 
+    /**
+     *
+     * @return Обработчик пакетов команд, если обработчик был уже создан, сбрасываем его состояние
+     */
     private ClientCommandPackageReader getClientCommandPackageReader() {
         if (this.clientCommandPackageReader == null) {
             this.clientCommandPackageReader = new ClientCommandPackageReader(this.serverHandler);

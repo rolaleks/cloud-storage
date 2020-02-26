@@ -6,7 +6,6 @@ import cloudstorage.net.PackageReadable;
 import io.netty.buffer.ByteBuf;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 public class PackageReader {
 
@@ -24,6 +23,7 @@ public class PackageReader {
 
 
         if (packageType == 0) {
+            //Если это начало запроса, то определяем обработчик этого запроса
             initPackage(byteBuf);
         }
 
@@ -35,6 +35,11 @@ public class PackageReader {
         }
     }
 
+    /**
+     * Определение типа обработчика для запроса
+     *
+     * @param byteBuf буфер
+     */
     private void initPackage(ByteBuf byteBuf) {
 
         this.packageType = byteBuf.readByte();
@@ -54,6 +59,9 @@ public class PackageReader {
         this.packageReader = null;
     }
 
+    /**
+     * @return Обработчик файловых пакетов, если обработчик был уже создан, сбрасываем его состояние
+     */
     private ServerFilePackageReader getServerFilePackageReader() {
         if (this.serverFilePackageReader == null) {
             this.serverFilePackageReader = new ServerFilePackageReader(this.clientHandler);
@@ -63,6 +71,9 @@ public class PackageReader {
         return this.serverFilePackageReader;
     }
 
+    /**
+     * @return Обработчик пакетов команд, если обработчик был уже создан, сбрасываем его состояние
+     */
     private ServerCommandPackageReader getServerCommandPackageReader() {
         if (this.serverCommandPackageReader == null) {
             this.serverCommandPackageReader = new ServerCommandPackageReader(this.clientHandler);

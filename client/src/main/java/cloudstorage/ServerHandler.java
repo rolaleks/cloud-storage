@@ -9,7 +9,6 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.socket.SocketChannel;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 public class ServerHandler extends ChannelInboundHandlerAdapter {
 
@@ -64,6 +63,9 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         cause.printStackTrace();
     }
 
+    /**
+     * @return Диспечер обработки команд на клиенте
+     */
     public ClientCommandDispatcher getClientCommandDispatcher() {
 
         if (clientCommandDispatcher == null) {

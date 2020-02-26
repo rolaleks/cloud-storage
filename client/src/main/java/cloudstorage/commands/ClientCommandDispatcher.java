@@ -4,6 +4,9 @@ import cloudstorage.ServerHandler;
 import cloudstorage.net.CommandPerformable;
 import cloudstorage.net.PackageCommandType;
 
+/**
+ * Диспечиризация обработчиков команд на клиенте и их кеширование
+ */
 public class ClientCommandDispatcher {
 
     private ServerHandler serverHandler;

@@ -13,24 +13,27 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import javafx.scene.shape.Path;
 
 
 public class CloudClient {
 
+    /**
+     * путь локального хранилища по умолчанию
+     */
     public static final String localPath = "localStorage";
 
     private ServerHandler serverHandler;
 
     private boolean isClosed;
     private boolean isAuth;
+    private Thread clientThread;
 
     public CloudClient() {
         EventLoopGroup workerGroup = new NioEventLoopGroup();
 
         CloudClient client = this;
         isClosed = false;
-        new Thread(() -> {
+        clientThread = new Thread(() -> {
             try {
 
                 Bootstrap b = new Bootstrap();
@@ -42,6 +45,9 @@ public class CloudClient {
                     public void initChannel(SocketChannel ch) throws Exception {
                         serverHandler = new ServerHandler(client, ch);
                         ch.pipeline().addLast(serverHandler);
+                        synchronized (client) {
+                            client.notify();
+                        }
                     }
                 });
                 ChannelFuture f = b.connect("localhost", 8888).sync();
@@ -50,30 +56,30 @@ public class CloudClient {
                 e.printStackTrace();
             } finally {
                 workerGroup.shutdownGracefully();
+                serverHandler = null;
                 this.isClosed = true;
             }
-        }).start();
-    }
+        });
+        clientThread.start();
 
-    public void sendPackage(Package p) {
-
-        //Ждем подключение к серверу
-        int tryCount = 0;
-        while (this.serverHandler == null && !isClosed) {
-            tryCount++;
+        //ждем подключение клиента к серверу
+        if (serverHandler == null) {
             try {
-                Thread.sleep(1000);
+                synchronized (client) {
+                    client.wait();
+                }
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            if (tryCount == 20) {
-                break;
-            }
         }
-        if (this.serverHandler == null) {
-            throw new RuntimeException("Невозможно подключиться к серверу");
-        }
+    }
 
+    /**
+     * Отправка всех запросов/пакетов на сервер
+     *
+     * @param p Пакет
+     */
+    public void sendPackage(Package p) {
 
         this.serverHandler.send(p);
     }
@@ -97,16 +103,27 @@ public class CloudClient {
         sendPackage(authPackage);
     }
 
+    /**
+     * Получение списка локальных файлов
+     */
     public String[] getLocalFiles() {
         FolderReader folderReader = new FolderReader(ControllerManager.getMainController().getFolder());
         return folderReader.getFileNames();
     }
 
+    /**
+     * Получение списка файлов на сервере
+     */
     public void getRemoteFiles() {
         CommandPackage authPackage = new CommandPackage(PackageCommandType.GET_FILES, "");
         sendPackage(authPackage);
     }
 
+    /**
+     * Отправка файла на сервер по имени файла
+     *
+     * @param file имя файла
+     */
     public void sendFileToServer(String file) {
         FilePackage filePackage = new FilePackage(ControllerManager.getMainController().getFolder() + "/" + file);
 
@@ -114,6 +131,11 @@ public class CloudClient {
         getRemoteFiles();
     }
 
+    /**
+     * Загрузка файла с сервер на клиент по имени файла
+     *
+     * @param file имя файла
+     */
     public void loadFileFromServer(String file) {
         CommandPackage authPackage = new CommandPackage(PackageCommandType.GET_FILE, file);
         sendPackage(authPackage);

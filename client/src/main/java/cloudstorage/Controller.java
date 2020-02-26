@@ -1,22 +1,17 @@
 package cloudstorage;
 
-import cloudstorage.net.CommandPackage;
-import cloudstorage.net.PackageCommandType;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
-import javafx.stage.Window;
 
 import java.io.File;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.ResourceBundle;
 
 public class Controller implements Initializable {
@@ -128,6 +123,10 @@ public class Controller implements Initializable {
         }
     }
 
+    /**
+     * Смена локальной папки с файлами
+     * @param actionEvent
+     */
     public void folderSelect(ActionEvent actionEvent) {
         DirectoryChooser directoryChooser = new DirectoryChooser();
         File selectedDirectory = directoryChooser.showDialog(folder.getScene().getWindow());

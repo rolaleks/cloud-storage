@@ -9,6 +9,10 @@ public class CommandPackage extends Package {
 
     private PackageCommandType command;
     private String params;
+
+    /**
+     * флаг, отправлен ли пакет полностью
+     */
     private boolean isSent;
 
     public CommandPackage(PackageCommandType command, String params) {
@@ -16,6 +20,10 @@ public class CommandPackage extends Package {
         this.params = params;
     }
 
+    /**
+     *
+     * @return байты параметров команды
+     */
     @Override
     byte[] getBodyBytes() {
 
@@ -27,6 +35,10 @@ public class CommandPackage extends Package {
         return new byte[0];
     }
 
+    /**
+     *
+     * @return байты шапки команды
+     */
     @Override
     byte[] getHeadBytes() {
 

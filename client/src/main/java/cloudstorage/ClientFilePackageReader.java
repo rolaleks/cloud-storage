@@ -19,6 +19,7 @@ public class ClientFilePackageReader extends FilePackageReader {
         boolean result = super.read(byteBuf);
 
         if (result) {
+            //если файл полностью получен, то обновляем список файлов на клиенте
             ControllerManager.getMainController().refreshFiles();
         }
         return result;

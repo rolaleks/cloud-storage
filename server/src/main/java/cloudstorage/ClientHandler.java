@@ -11,7 +11,6 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.socket.SocketChannel;
 
-import javax.security.auth.login.CredentialException;
 import java.io.*;
 
 public class ClientHandler extends ChannelInboundHandlerAdapter {
@@ -52,6 +51,10 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
         ctx.close();
     }
 
+    /**
+     * Если автризация прошла успешно или нет, то отправляем на клиент соотвествующий запрос
+     * @param auth
+     */
     public void setAuth(boolean auth) {
         isAuth = auth;
 
@@ -78,6 +81,9 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
         return this.user;
     }
 
+    /**
+     * @return Диспечер обработки команд на сервере
+     */
     public ServerCommandDispatcher getServerCommandDispatcher() {
         if (this.serverCommandDispatcher == null) {
             this.serverCommandDispatcher = new ServerCommandDispatcher(this);

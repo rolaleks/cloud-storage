@@ -10,6 +10,10 @@ public class AuthStatus extends BaseCommand implements CommandPerformable {
         super(serverHandler);
     }
 
+    /**
+     *
+     * @param params 1 - успешная авторизация или 0 - не успешная
+     */
     public void perform(String params) {
 
         boolean isAuth = params.equals("1");

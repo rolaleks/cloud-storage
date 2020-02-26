@@ -1,11 +1,6 @@
 package cloudstorage.net;
 
-import com.google.common.primitives.Ints;
-import com.google.common.primitives.Longs;
 import io.netty.buffer.ByteBuf;
-
-import java.io.BufferedInputStream;
-import java.io.IOException;
 
 abstract public class CommandPackageReader implements PackageReadable {
 
@@ -16,6 +11,11 @@ abstract public class CommandPackageReader implements PackageReadable {
 
     abstract public boolean read(ByteBuf byteBuf);
 
+    /**
+     * @param byteBuf буфер
+     * @return размер названия команды
+     * @throws NotEnoughBytesException если недостаточно байт для прочтения
+     */
     protected Integer readCommandNameSize(ByteBuf byteBuf) throws NotEnoughBytesException {
         if (commandNameSize != null) {
             return commandNameSize;
@@ -30,6 +30,11 @@ abstract public class CommandPackageReader implements PackageReadable {
     }
 
 
+    /**
+     * @param byteBuf буфер
+     * @return Название команбы
+     * @throws NotEnoughBytesException если недостаточно байт для прочтения
+     */
     protected String readCommandName(ByteBuf byteBuf) throws NotEnoughBytesException {
         if (commandName != null) {
             return commandName;
@@ -48,6 +53,11 @@ abstract public class CommandPackageReader implements PackageReadable {
     }
 
 
+    /**
+     * @param byteBuf буфер
+     * @return размер параметров команды
+     * @throws NotEnoughBytesException если недостаточно байт для прочтения
+     */
     protected int readParamsSize(ByteBuf byteBuf) throws NotEnoughBytesException {
         if (paramsSize != null) {
             return paramsSize;
@@ -61,7 +71,11 @@ abstract public class CommandPackageReader implements PackageReadable {
         return paramsSize;
     }
 
-
+    /**
+     * @param byteBuf буфер
+     * @return параметры команды
+     * @throws NotEnoughBytesException если недостаточно байт для прочтения
+     */
     protected String readParams(ByteBuf byteBuf) throws NotEnoughBytesException {
 
         if (params != null) {

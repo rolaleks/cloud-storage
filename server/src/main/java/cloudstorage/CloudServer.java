@@ -10,13 +10,9 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 
-import java.io.IOException;
-import java.net.ServerSocket;
-import java.net.Socket;
 
 public class CloudServer {
 
-    private ServerSocket serverSocket;
 
     public CloudServer() {
         EventLoopGroup bossGroup = new NioEventLoopGroup();
@@ -43,10 +39,5 @@ public class CloudServer {
             workerGroup.shutdownGracefully();
             bossGroup.shutdownGracefully();
         }
-    }
-
-
-    public void close() {
-
     }
 }

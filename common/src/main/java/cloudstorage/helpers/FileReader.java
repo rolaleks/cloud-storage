@@ -8,16 +8,17 @@ public class FileReader {
     private String path;
 
     private int chunk = 262144;
+    private byte[] buffer;
 
     private BufferedInputStream bufferedInputStream;
 
     public FileReader(String path) throws FileNotFoundException {
         this.path = path;
+        buffer = new byte[this.chunk];
         bufferedInputStream = new BufferedInputStream(new FileInputStream(path));
     }
 
-    public byte[] read() throws FileNotFoundException, IOException {
-        byte[] buffer = new byte[this.chunk];
+    public byte[] read() throws IOException {
         int len;
         if ((len = bufferedInputStream.read(buffer)) != -1) {
             if (len == this.chunk) {
@@ -26,16 +27,8 @@ public class FileReader {
                 return Arrays.copyOfRange(buffer, 0, len);
             }
         }
-
+        this.close();
         return new byte[0];
-    }
-
-    public int getChunk() {
-        return chunk;
-    }
-
-    public void setChunk(int chunk) {
-        this.chunk = chunk;
     }
 
     public void close() {

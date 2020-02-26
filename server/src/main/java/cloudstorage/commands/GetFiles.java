@@ -17,6 +17,10 @@ public class GetFiles implements CommandPerformable {
         this.clientHandler = clientHandler;
     }
 
+    /**
+     * Получение списка файлов на сервере
+     * @param
+     */
     public void perform(String params) {
 
         User user = clientHandler.getUser();

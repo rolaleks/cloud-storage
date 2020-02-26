@@ -2,11 +2,8 @@ package cloudstorage.commands;
 
 import cloudstorage.ClientHandler;
 import cloudstorage.db.User;
-import cloudstorage.helpers.FolderReader;
-import cloudstorage.net.CommandPackage;
 import cloudstorage.net.CommandPerformable;
 import cloudstorage.net.FilePackage;
-import cloudstorage.net.PackageCommandType;
 
 
 public class GetFile  implements CommandPerformable {
@@ -18,6 +15,9 @@ public class GetFile  implements CommandPerformable {
         this.clientHandler = clientHandler;
     }
 
+    /**
+     * @param params имя файла, которе следует отправить на клиент
+     */
     public void perform(String params) {
 
         User user = clientHandler.getUser();

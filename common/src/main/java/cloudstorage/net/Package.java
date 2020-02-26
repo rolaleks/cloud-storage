@@ -11,6 +11,10 @@ public abstract class Package {
 
     abstract byte getFlag();
 
+    /**
+     * @return байты пакета, если вернулся пустой массив, значит пакет полностью отправлен
+     * данная функция вызывается в цикле
+     */
     public byte[] getBytes() {
 
         if (!this.isHeadSent) {
@@ -25,6 +29,9 @@ public abstract class Package {
         return new byte[0];
     }
 
+    /**
+     * @return список байт, заголовка пакета
+     */
     private byte[] getHead() {
 
         byte[] headBytes = this.getHeadBytes();
@@ -35,6 +42,9 @@ public abstract class Package {
         return head;
     }
 
+    /**
+     * @return список байт, тела пакета
+     */
     private byte[] getBody() {
 
         byte[] body = this.getBodyBytes();

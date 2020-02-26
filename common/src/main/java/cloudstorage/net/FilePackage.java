@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 
 public class FilePackage extends Package {
 
@@ -34,6 +33,10 @@ public class FilePackage extends Package {
 
     }
 
+    /**
+     *
+     * @return байты файла, максимальный размер массива = fileReader.chunk , если массив пустой, то прочитан весь файл
+     */
     @Override
     byte[] getBodyBytes() {
 
@@ -42,10 +45,14 @@ public class FilePackage extends Package {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        fileReader.close();
 
         return new byte[0];
     }
 
+    /**
+     * @return список байтов шапки пакета
+     */
     @Override
     byte[] getHeadBytes() {
 

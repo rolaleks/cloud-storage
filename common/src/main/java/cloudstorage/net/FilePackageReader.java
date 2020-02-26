@@ -5,7 +5,6 @@ import io.netty.buffer.ByteBuf;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 abstract public class FilePackageReader implements PackageReadable {
 
@@ -20,13 +19,15 @@ abstract public class FilePackageReader implements PackageReadable {
         try {
             //Читаем имя из пакета, если имя уже было считано в предыдущем пакете байт, то берем из кеша
             String name = this.readFileName(byteBuf);
-            //Читаем размер файла из пакета, если размер файла уже было считано в предыдущем пакете байт, то берем из кеша
+            //Читаем размер файла из пакета, если размер файла уже был считан в предыдущем пакете байт, то берем из кеша
             long totalFileSize = this.readFileSize(byteBuf);
 
             Path path = getFilePath(name);
-            //смотрим сколько мы уже загрузили в файл байт
+            //смотрим сколько мы уже загрузили в файл байт, если fileCreated = false значит это новый запрос на загрузку файла,
+            // и мы пишем его с начала файла (перезаписываем файл)
             long currentFileSize = fileCreated && Files.exists(path) ? Files.size(path) : 0;
 
+            //Если нет байт для записи, то открывать поток записи в файл нет смысла
             if (byteBuf.readableBytes() <= 0) {
                 return false;
             }
@@ -38,11 +39,11 @@ abstract public class FilePackageReader implements PackageReadable {
 
                 //считает сколько осталось байт, для загрузки в файл
                 long bytesLeft = totalFileSize - currentFileSize;
-                //Если пришел пакет больше чем на нужно, то берем часть байт и пишем в файл
+                //Если пришел пакет больше чем нам нужно, то берем часть байт и пишем в файл
                 bytesLeft = byteBuf.readableBytes() > bytesLeft ? bytesLeft : byteBuf.readableBytes();
                 currentFileSize += bytesLeft;
 
-                while (bytesLeft-- > 0){
+                while (bytesLeft-- > 0) {
                     bufferedOutputStream.write(byteBuf.readByte());
                 }
 
@@ -62,6 +63,11 @@ abstract public class FilePackageReader implements PackageReadable {
     }
 
 
+    /**
+     * @param byteBuf буфер
+     * @return размер названия файла
+     * @throws NotEnoughBytesException если недостаточно байт для прочтения
+     */
     protected Integer readFileNameSize(ByteBuf byteBuf) throws NotEnoughBytesException {
 
         if (this.fileNameSize != null) {
@@ -77,7 +83,11 @@ abstract public class FilePackageReader implements PackageReadable {
         return this.fileNameSize;
     }
 
-
+    /**
+     * @param byteBuf буфер
+     * @return название файла
+     * @throws NotEnoughBytesException если недостаточно байт для прочтения
+     */
     protected String readFileName(ByteBuf byteBuf) throws NotEnoughBytesException {
         if (this.fileName != null) {
             return this.fileName;
@@ -97,7 +107,11 @@ abstract public class FilePackageReader implements PackageReadable {
         return this.fileName;
     }
 
-
+    /**
+     * @param byteBuf буфер
+     * @return размер файла
+     * @throws NotEnoughBytesException если недостаточно байт для прочтения
+     */
     protected long readFileSize(ByteBuf byteBuf) throws NotEnoughBytesException {
 
         if (this.fileSize != null) {
@@ -112,6 +126,11 @@ abstract public class FilePackageReader implements PackageReadable {
         return this.fileSize;
     }
 
+    /**
+     *
+     * @param fileName название файла
+     * @return путь к файлу, куда нужно произвести запись, клиент и сервер переопределяет этот метод, у каждого будет свой каталог
+     */
     public abstract Path getFilePath(String fileName);
 
     public void reset() {

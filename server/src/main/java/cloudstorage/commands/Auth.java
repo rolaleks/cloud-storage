@@ -13,6 +13,9 @@ public class Auth implements CommandPerformable {
         this.clientHandler = clientHandler;
     }
 
+    /**
+     * @param params строка авторизации в формате "login:pass"
+     */
     public void perform(String params) {
 
         String[] loginPass = params.split(":");
@@ -22,6 +25,7 @@ public class Auth implements CommandPerformable {
             return;
         }
 
+        //ищем юзера в БД
         User user = User.findOneByLogin(loginPass[0]);
 
         if (user != null) {
