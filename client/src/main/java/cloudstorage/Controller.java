@@ -37,6 +37,9 @@ public class Controller implements Initializable {
     @FXML
     TextField folder;
 
+    @FXML
+    Label progressLabel;
+
     CloudClient cloudClient;
 
     private boolean isAuthorized;
@@ -114,6 +117,16 @@ public class Controller implements Initializable {
         return folder.getText();
     }
 
+    public void setPercent(int percent) {
+        Platform.runLater(() -> {
+            if (percent == 100) {
+                this.progressLabel.setText("Файл загружен");
+            } else {
+                this.progressLabel.setText("Процент загрузки: " + percent);
+            }
+        });
+    }
+
     public void sendToClient(MouseEvent mouseEvent) {
         if (mouseEvent.getClickCount() == 2) {
             String file = serverList.getSelectionModel().getSelectedItem();
@@ -125,6 +138,7 @@ public class Controller implements Initializable {
 
     /**
      * Смена локальной папки с файлами
+     *
      * @param actionEvent
      */
     public void folderSelect(ActionEvent actionEvent) {
