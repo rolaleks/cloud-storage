@@ -1,10 +1,8 @@
 package cloudstorage;
 
 import cloudstorage.helpers.FolderReader;
-import cloudstorage.net.CommandPackage;
-import cloudstorage.net.FilePackage;
+import cloudstorage.net.*;
 import cloudstorage.net.Package;
-import cloudstorage.net.PackageCommandType;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -126,6 +124,13 @@ public class CloudClient {
      */
     public void sendFileToServer(String file) {
         FilePackage filePackage = new FilePackage(ControllerManager.getMainController().getFolder() + "/" + file);
+        filePackage.setPartitionSendHandler(new PackageHandler(filePackage) {
+            @Override
+            public Void call()  {
+                ControllerManager.getMainController().setPercent(filePackage.getPercent());
+                return null;
+            }
+        });
 
         sendPackage(filePackage);
         getRemoteFiles();

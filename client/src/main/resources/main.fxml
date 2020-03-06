@@ -50,5 +50,8 @@
                 <ListView fx:id="serverList" onMouseClicked="#sendToClient"/>
             </VBox>
         </HBox>
+        <HBox VBox.vgrow="ALWAYS"  >
+            <Label fx:id="progressLabel"></Label>
+        </HBox>
     </VBox>
 </VBox>

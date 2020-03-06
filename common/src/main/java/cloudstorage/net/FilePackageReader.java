@@ -12,6 +12,7 @@ abstract public class FilePackageReader implements PackageReadable {
     protected String fileName;
     protected Long fileSize;
     protected boolean fileCreated;
+    protected Integer percent = 0;
 
 
     public boolean read(ByteBuf byteBuf) {
@@ -26,7 +27,7 @@ abstract public class FilePackageReader implements PackageReadable {
             //смотрим сколько мы уже загрузили в файл байт, если fileCreated = false значит это новый запрос на загрузку файла,
             // и мы пишем его с начала файла (перезаписываем файл)
             long currentFileSize = fileCreated && Files.exists(path) ? Files.size(path) : 0;
-
+            setPercent(currentFileSize);
             //Если нет байт для записи, то открывать поток записи в файл нет смысла
             if (byteBuf.readableBytes() <= 0) {
                 return false;
@@ -48,6 +49,7 @@ abstract public class FilePackageReader implements PackageReadable {
                 }
 
                 if (currentFileSize >= totalFileSize) {
+                    setPercent(this.fileSize);
                     return true;
                 }
             } catch (FileNotFoundException e) {
@@ -127,7 +129,6 @@ abstract public class FilePackageReader implements PackageReadable {
     }
 
     /**
-     *
      * @param fileName название файла
      * @return путь к файлу, куда нужно произвести запись, клиент и сервер переопределяет этот метод, у каждого будет свой каталог
      */
@@ -140,5 +141,18 @@ abstract public class FilePackageReader implements PackageReadable {
         this.fileCreated = false;
     }
 
+    private void setPercent(long loaded) {
+
+        if (this.fileSize == null || this.fileSize == 0) {
+            this.percent = 0;
+        } else {
+            this.percent = (int) ((loaded * 100) / fileSize);
+        }
+    }
+
+    public Integer getPercent() {
+
+        return this.percent;
+    }
 
 }
